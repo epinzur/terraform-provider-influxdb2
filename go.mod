@@ -1,4 +1,4 @@
-module github.com/hashicorp/terraform-provider-scaffolding
+module github.com/rltvty/terraform-provider-influxdb2
 
 go 1.16
 

@@ -28,24 +28,23 @@ func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			Schema: map[string]*schema.Schema{
-				"host": &schema.Schema{
+				"host": {
 					Type:        schema.TypeString,
-					Optional:    false,
+					Required:    true,
 					DefaultFunc: schema.EnvDefaultFunc("INFLUX_HOST", nil),
 				},
-				"token": &schema.Schema{
+				"token": {
 					Type:        schema.TypeString,
-					Optional:    false,
+					Required:    true,
 					Sensitive:   true,
 					DefaultFunc: schema.EnvDefaultFunc("INFLUX_TOKEN", nil),
 				},
 			},
 			DataSourcesMap: map[string]*schema.Resource{
-				"scaffolding_data_source": dataSourceScaffolding(),
-				"influxdb2_organization":  dataSourceOrganization(),
+				"influxdb2_organization": dataSourceOrganization(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"scaffolding_resource": resourceScaffolding(),
+				"influxdb2_organization": resourceOrganization(),
 			},
 		}
 
@@ -73,8 +72,8 @@ func providerConfigure(version string, p *schema.Provider) func(context.Context,
 		if host == "" || token == "" {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  "Unable to create InfluxDB2 client",
-				Detail:   "Unable to auth authenticated InfluxDB2 client",
+				Summary:  "Unable to create InfluxDB2 OSS client",
+				Detail:   "Unable to auth authenticated InfluxDB2 OSS client",
 			})
 			return nil, diags
 		}
@@ -97,8 +96,8 @@ func providerConfigure(version string, p *schema.Provider) func(context.Context,
 		if !ok {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  "InfluxDB2 Server is not ready",
-				Detail:   "InfluxDB2 Server is not ready",
+				Summary:  "InfluxDB2 OSS Server is not ready",
+				Detail:   "InfluxDB2 OSS Server is not ready",
 			})
 			client.Close()
 			return nil, diags
@@ -113,8 +112,8 @@ func providerConfigure(version string, p *schema.Provider) func(context.Context,
 		if check.Status != domain.HealthCheckStatusPass {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  "InfluxDB2 Health is not passing",
-				Detail:   "InfluxDB2 Health is not passing",
+				Summary:  "InfluxDB2 OSS Health is not passing",
+				Detail:   "InfluxDB2 OSS Health is not passing",
 			})
 			client.Close()
 			return nil, diags

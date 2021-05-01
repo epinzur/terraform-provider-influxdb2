@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"os"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -10,12 +10,10 @@ import (
 
 // How to run the acceptance tests for this provider:
 //
-// - Obtain an official Vault release from the Vault website at
-//   https://vaultproject.io/ and extract the "vault" binary
-//   somewhere.
+// - Install docker & docker-compose on your machine
 //
-// - Run the following to start the Vault server in development mode:
-//       vault server -dev
+// - Run the following to start the Influx server in test mode:
+//       docker-compose up
 //
 // - Take the "Root Token" value printed by Vault as the server started
 //   up and set it as the value of the VAULT_TOKEN environment variable
@@ -52,15 +50,17 @@ func TestProvider(t *testing.T) {
 	}
 }
 
-func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("INFLUX_HOST"); v == "" {
-		t.Fatal("INFLUX_HOST must be set for acceptance tests")
-	}
-	if v := os.Getenv("INFLUX_TOKEN"); v == "" {
-		t.Fatal("INFLUX_TOKEN must be set for acceptance tests")
-	}
-	// about the appropriate environment variables being set are common to see in a pre-check
-	// function.
+func testConfig(res ...string) string {
+	provider := `
+		provider "influxdb2" {
+			host     = "http://localhost:8086"
+			token    = "oops_this_is_committed_to_source_control"
+		}
+	`
+
+	c := []string{provider}
+	c = append(c, res...)
+	return strings.Join(c, "\n")
 }
 
 func importStep(name string, ignore ...string) resource.TestStep {
