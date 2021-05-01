@@ -36,11 +36,6 @@ func dataSourceOrganization() *schema.Resource {
 				Computed:    true,
 				Description: "The description of the organization.",
 			},
-			"status": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "The status of the organization.",
-			},
 		}, createdUpdatedSchema("organization")),
 	}
 }
@@ -94,7 +89,6 @@ func dataSourceOrganizationRead(ctx context.Context, d *schema.ResourceData, met
 	if org.Description != nil {
 		d.Set("description", *org.Description)
 	}
-	d.Set("status", org.Status)
 
 	return diags
 }

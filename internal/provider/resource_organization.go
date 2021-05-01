@@ -11,8 +11,6 @@ import (
 	"github.com/influxdata/influxdb-client-go/domain"
 )
 
-var organizationResourceStatuses = []string{"active", "inactive"}
-
 func resourceOrganization() *schema.Resource {
 	return &schema.Resource{
 		// This description is used by the documentation generator and the language server.
@@ -38,16 +36,6 @@ func resourceOrganization() *schema.Resource {
 				Description: "The description of the organization.",
 				Type:        schema.TypeString,
 				Optional:    true,
-			},
-			"status": {
-				Description:      "The status of the organization.",
-				Type:             schema.TypeString,
-				Optional:         true,
-				Computed:         true,
-				ValidateDiagFunc: validateStringInSlice(organizationResourceStatuses, true),
-				DiffSuppressFunc: func(_, old, new string, _ *schema.ResourceData) bool {
-					return strings.ToLower(old) == strings.ToLower(new)
-				},
 			},
 			// Computed outputs
 			"id": {
@@ -76,19 +64,10 @@ func resourceOrganizationCreate(ctx context.Context, d *schema.ResourceData, met
 		return diag.Errorf("unable to create organization (%s) - an organization with this name already exists; see resouce documentation for influxdb2_organization for instructions on how to add an already existing organization to the state", name)
 	}
 
-	var status domain.OrganizationStatus
-
-	if strings.ToLower(d.Get("status").(string)) == string(domain.OrganizationStatusActive) {
-		status = domain.OrganizationStatusActive
-	} else {
-		status = domain.OrganizationStatusInactive
-	}
-
 	description := d.Get("description").(string)
 	org := *&domain.Organization{
 		Name:        name,
 		Description: &description,
-		Status:      &status,
 	}
 
 	log.Printf("[INFO] Creating organization (%s)", name)
@@ -164,19 +143,11 @@ func resourceOrganizationUpdate(ctx context.Context, d *schema.ResourceData, met
 		return diag.Errorf("unable to retrieve Organization (%s): %v", id, err)
 	}
 
-	var status domain.OrganizationStatus
-	if strings.ToLower(d.Get("status").(string)) == string(domain.OrganizationStatusActive) {
-		status = domain.OrganizationStatusActive
-	} else {
-		status = domain.OrganizationStatusInactive
-	}
-
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
 
 	org.Name = name
 	org.Description = &description
-	org.Status = &status
 
 	log.Printf("[INFO] Updating organization (%s)", id)
 	updatedOrg, err := orgsAPI.UpdateOrganization(ctx, org)
@@ -220,9 +191,6 @@ func setOrganizationResourceData(d *schema.ResourceData, org *domain.Organizatio
 		return err
 	}
 	if err := d.Set("name", org.Name); err != nil {
-		return err
-	}
-	if err := d.Set("status", org.Status); err != nil {
 		return err
 	}
 	if err := d.Set("description", org.Description); err != nil {

@@ -22,7 +22,6 @@ func influxOrg(orgName string, orgDesc string) string {
 		resource "influxdb2_organization" "org" {
 			name = "%s"
 			description = "%s"
-			status = "active"
 		}
 `, orgName, orgDesc)
 }
@@ -42,7 +41,6 @@ func TestAccResourceOrganization(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("influxdb2_organization.org", "name", org),
 					resource.TestCheckResourceAttr("influxdb2_organization.org", "description", createDesc),
-					resource.TestCheckResourceAttr("influxdb2_organization.org", "status", "active"),
 					testAccResourceOrganizationExists(provider, "influxdb2_organization.org"),
 				),
 			},
@@ -53,7 +51,6 @@ func TestAccResourceOrganization(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("influxdb2_organization.org", "name", org),
 					resource.TestCheckResourceAttr("influxdb2_organization.org", "description", updateDesc),
-					resource.TestCheckResourceAttr("influxdb2_organization.org", "status", "active"),
 					testAccResourceOrganizationExists(provider, "influxdb2_organization.org"),
 				),
 			},
