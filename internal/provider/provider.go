@@ -72,8 +72,8 @@ func providerConfigure(version string, p *schema.Provider) func(context.Context,
 		if host == "" || token == "" {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  "Unable to create InfluxDB2 OSS client",
-				Detail:   "Unable to auth authenticated InfluxDB2 OSS client",
+				Summary:  "Unable to create InfluxDB2 client",
+				Detail:   "Unable to auth authenticated InfluxDB2 client",
 			})
 			return nil, diags
 		}
@@ -96,8 +96,8 @@ func providerConfigure(version string, p *schema.Provider) func(context.Context,
 		if !ok {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  "InfluxDB2 OSS Server is not ready",
-				Detail:   "InfluxDB2 OSS Server is not ready",
+				Summary:  "InfluxDB2 Server is not ready",
+				Detail:   "InfluxDB2 Server is not ready",
 			})
 			client.Close()
 			return nil, diags
@@ -112,8 +112,8 @@ func providerConfigure(version string, p *schema.Provider) func(context.Context,
 		if check.Status != domain.HealthCheckStatusPass {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  "InfluxDB2 OSS Health is not passing",
-				Detail:   "InfluxDB2 OSS Health is not passing",
+				Summary:  "InfluxDB2 Health is not passing",
+				Detail:   "InfluxDB2 Health is not passing",
 			})
 			client.Close()
 			return nil, diags

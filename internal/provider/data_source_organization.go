@@ -9,15 +9,6 @@ import (
 	"github.com/influxdata/influxdb-client-go/domain"
 )
 
-var (
-	organizationFields = []string{
-		"creation_time",
-		"description",
-		"status",
-		"last_update_time",
-	}
-)
-
 func dataSourceOrganization() *schema.Resource {
 	return &schema.Resource{
 		// This description is used by the documentation generator and the language server.
@@ -25,19 +16,21 @@ func dataSourceOrganization() *schema.Resource {
 
 		ReadContext: dataSourceOrganizationRead,
 
-		Schema: map[string]*schema.Schema{
-			"organization_name": {
+		Schema: mergeSchemas(map[string]*schema.Schema{
+			// Optional inputs
+			"name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true,
+				Computed:    true, //maybe this shouldn't be set?
 				Description: "Name of the organization.",
 			},
-			"organization_id": {
+			"id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true,
+				Computed:    true, //maybe this shouldn't be set?
 				Description: "ID of the organization.",
 			},
+			// Computed outputs
 			"description": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -48,15 +41,7 @@ func dataSourceOrganization() *schema.Resource {
 				Computed:    true,
 				Description: "The status of the organization.",
 			},
-			"creation_time": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"last_update_time": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-		},
+		}, createdUpdatedSchema("organization")),
 	}
 }
 
@@ -72,7 +57,7 @@ func dataSourceOrganizationRead(ctx context.Context, d *schema.ResourceData, met
 		err   error
 	)
 
-	if v, ok := d.GetOk("organization_name"); ok {
+	if v, ok := d.GetOk("name"); ok {
 		orgName := v.(string)
 		if org, err = orgAPI.FindOrganizationByName(ctx, orgName); err != nil {
 			diags = append(diags, diag.FromErr(err)...)
@@ -82,7 +67,7 @@ func dataSourceOrganizationRead(ctx context.Context, d *schema.ResourceData, met
 			})
 			return diags
 		}
-	} else if v, ok := d.GetOk("organization_id"); ok {
+	} else if v, ok := d.GetOk("id"); ok {
 		orgID := v.(string)
 		if org, err = orgAPI.FindOrganizationByID(ctx, orgID); err != nil {
 			diags = append(diags, diag.FromErr(err)...)
@@ -104,11 +89,12 @@ func dataSourceOrganizationRead(ctx context.Context, d *schema.ResourceData, met
 	}
 
 	d.SetId(*id)
-	d.Set("organization_id", *id)
-	d.Set("organization_name", org.Name)
+	d.Set("id", *id)
+	d.Set("name", org.Name)
 	if org.Description != nil {
 		d.Set("description", *org.Description)
 	}
+	d.Set("status", org.Status)
 
 	return diags
 }
