@@ -16,7 +16,7 @@ Once you've written your provider, you'll want to [publish it on the Terraform R
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
--	[Go](https://golang.org/doc/install) >= 1.15
+-	[Go](https://golang.org/doc/install) >= 1.16
 
 ## Building The Provider
 
@@ -60,3 +60,7 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 ```sh
 $ make testacc
 ```
+
+## TODO:
+
+* Add Warnings on Plan if organization or bucket `name` changes, similiar to the UI.

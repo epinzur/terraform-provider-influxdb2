@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	createDesc = "test org"
-	updateDesc = "test org update"
+	createOrgDesc = "test org"
+	updateOrgDesc = "test org update"
 )
 
 func influxOrg(orgName string, orgDesc string) string {
@@ -37,20 +37,20 @@ func TestAccResourceOrganization(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				//create
-				Config: testConfig(influxOrg(org, createDesc)),
+				Config: testConfig(influxOrg(org, createOrgDesc)),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("influxdb2_organization.org", "name", org),
-					resource.TestCheckResourceAttr("influxdb2_organization.org", "description", createDesc),
+					resource.TestCheckResourceAttr("influxdb2_organization.org", "description", createOrgDesc),
 					testAccResourceOrganizationExists(provider, "influxdb2_organization.org"),
 				),
 			},
 			importStep("influxdb2_organization.org"),
 			{
 				//update
-				Config: testConfig(influxOrg(org, updateDesc)),
+				Config: testConfig(influxOrg(org, updateOrgDesc)),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("influxdb2_organization.org", "name", org),
-					resource.TestCheckResourceAttr("influxdb2_organization.org", "description", updateDesc),
+					resource.TestCheckResourceAttr("influxdb2_organization.org", "description", updateOrgDesc),
 					testAccResourceOrganizationExists(provider, "influxdb2_organization.org"),
 				),
 			},
@@ -74,7 +74,7 @@ func testAccResourceOrganizationExists(testProvider *schema.Provider, name strin
 		client := testProvider.Meta().(*metaData).client
 
 		if _, err := client.OrganizationsAPI().FindOrganizationByID(context.Background(), id); err != nil {
-			return fmt.Errorf("Got an error when reading organization %q: %v", id, err)
+			return fmt.Errorf("Got an error when reading Organization %q: %v", id, err)
 		}
 
 		return nil
@@ -96,7 +96,7 @@ func testAccCheckResourceOrganizationDestroy(t *testing.T, testProvider *schema.
 				_, err := client.OrganizationsAPI().FindOrganizationByID(context.Background(), id)
 				if !strings.Contains(err.Error(), "not found") {
 					//return fmt.Errorf("didn't get a 404 when reading destroyed account %q: %v", id, err)
-					return fmt.Errorf("Was able to find destroyed organization %q: %v", id, err)
+					return fmt.Errorf("Was able to find destroyed Organization %q: %v", id, err)
 				}
 
 			default:

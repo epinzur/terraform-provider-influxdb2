@@ -21,22 +21,22 @@ func dataSourceOrganization() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true, //maybe this shouldn't be set?
-				Description: "Name of the organization.",
+				Computed:    true,
+				Description: "Name of the Organization.",
 			},
 			"id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true, //maybe this shouldn't be set?
-				Description: "ID of the organization.",
+				Computed:    true,
+				Description: "ID of the Organization.",
 			},
 			// Computed outputs
 			"description": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The description of the organization.",
+				Description: "The description of the Organization.",
 			},
-		}, createdUpdatedSchema("organization")),
+		}, createdUpdatedSchema("Organization")),
 	}
 }
 
@@ -58,7 +58,7 @@ func dataSourceOrganizationRead(ctx context.Context, d *schema.ResourceData, met
 			diags = append(diags, diag.FromErr(err)...)
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  fmt.Sprintf("Can't find organization with name: %s", orgName),
+				Summary:  fmt.Sprintf("Can't find Organization with name: %s", orgName),
 			})
 			return diags
 		}
@@ -68,7 +68,7 @@ func dataSourceOrganizationRead(ctx context.Context, d *schema.ResourceData, met
 			diags = append(diags, diag.FromErr(err)...)
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  fmt.Sprintf("Can't find organization with id: %s", orgID),
+				Summary:  fmt.Sprintf("Can't find Organization with id: %s", orgID),
 			})
 			return diags
 		}
