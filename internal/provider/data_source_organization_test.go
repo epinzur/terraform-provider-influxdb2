@@ -17,6 +17,9 @@ func testDataSourceOrganizationConfig(orgName string) string {
 		}
 		data "influxdb2_organization" "by_name" {
 			name = influxdb2_organization.org.name
+
+			//requirement of terraform v0.13
+			depends_on = [influxdb2_organization.org]
 		}
 		data "influxdb2_organization" "by_id" {
 			id = influxdb2_organization.org.id
