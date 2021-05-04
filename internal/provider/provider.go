@@ -29,11 +29,13 @@ func New(version string) func() *schema.Provider {
 		p := &schema.Provider{
 			Schema: map[string]*schema.Schema{
 				"host": {
+					Description: "The host url where influxDB2 lives. Can also be set using the `INFLUX_HOST` environment variable.",
 					Type:        schema.TypeString,
 					Required:    true,
 					DefaultFunc: schema.EnvDefaultFunc("INFLUX_HOST", nil),
 				},
 				"token": {
+					Description: "An auth token that has the nesecary permissions to read-from and/or write-to InfluxDB2. Ideally this should be set using the `INFLUX_TOKEN` environment variable, so that the secret is not saved to source control.",
 					Type:        schema.TypeString,
 					Required:    true,
 					Sensitive:   true,

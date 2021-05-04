@@ -1,0 +1,44 @@
+---
+page_title: "influxdb2_organization Data Source - terraform-provider-influxdb2"
+subcategory: ""
+description: |-
+  Lookup an Organization in InfluxDB2.
+---
+
+# Data Source `influxdb2_organization`
+
+Lookup an Organization in InfluxDB2.
+
+## Example Usage
+
+```terraform
+resource "influxdb2_organization" "org" {
+  name        = "test-org"
+  description = "Organization for test users"
+}
+
+data "influxdb2_organization" "by_name" {
+  name = influxdb2_organization.org.name
+}
+
+data "influxdb2_organization" "by_id" {
+  id = influxdb2_organization.org.id
+}
+```
+
+## Schema
+
+### Optional
+
+- **id** (String) ID of the Organization.
+- **name** (String) Name of the Organization.
+
+### Read-only
+
+- **created_at** (String) The string time that the Organization was created.
+- **created_timestamp** (Number) The timestamp that the Organization was created.
+- **description** (String) The description of the Organization.
+- **updated_at** (String) The string time that the Organization was last updated.
+- **updated_timestamp** (Number) The timestamp that the Organization was last updated.
+
+

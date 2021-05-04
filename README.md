@@ -1,30 +1,37 @@
-# Terraform Provider Scaffolding
+Terraform Provider InfluxDB2
+==================
 
-This repository is a *template* for a [Terraform](https://www.terraform.io) provider. It is intended as a starting point for creating Terraform providers, containing:
+Available in the [Terraform Registry](https://registry.terraform.io/providers/rltvty/influxdb2/latest).
 
- - A resource, and a data source (`internal/provider/`),
- - Examples (`examples/`) and generated documentation (`docs/`),
- - Miscellaneous meta files.
- 
-These files contain boilerplate code that you will need to edit to create your own Terraform provider. A full guide to creating Terraform providers can be found at [Writing Custom Providers](https://www.terraform.io/docs/extend/writing-custom-providers.html).
+Note that the provider currently only supports the following resources & data sources:
+* Organizations
 
-Please see the [GitHub template repository documentation](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) for how to create a new repository from this template on GitHub.
+Expect additional resources to be supported very soon.
 
-Once you've written your provider, you'll want to [publish it on the Terraform Registry](https://www.terraform.io/docs/registry/providers/publishing.html) so that others can use it.
-
+Development has been done using InfluxDB OSS version 2.0.4.  The provider should also work on InfluxDB Cloud, but this has not been tested.  Proceed at your own risk.
 
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
--	[Go](https://golang.org/doc/install) >= 1.16
+-	[Go](https://golang.org/doc/install) >= 1.16.3
 
 ## Building The Provider
 
 1. Clone the repository
 1. Enter the repository directory
-1. Build the provider using the Go `install` command: 
-```sh
-$ go install
+1. Build the provider using `make dev`. This will place the provider onto your system in a [Terraform 0.13-compliant](https://www.terraform.io/upgrade-guides/0-13.html#in-house-providers) manner.
+
+You'll need to ensure that your Terraform file contains the information necessary to find the plugin when running `terraform init`. `make dev` will use a version number of 0.0.1, so the following block will work:
+
+```hcl
+terraform {
+        required_providers {
+                influxdb2 = {
+                        source = "localhost/providers/rltvty/influxdb2"
+                        version = "0.0.1"
+                }
+        }
+}
 ```
 
 ## Adding Dependencies
@@ -47,20 +54,41 @@ Fill this in for each provider
 
 ## Developing the Provider
 
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
+If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above). You will also need `docker` & `docker-compose`.
 
 To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
-To generate or update documentation, run `go generate`.
+In order to run the full suite of Acceptance tests:
+* First boot the test InfluxDB server via `docker-compose up`
+* In another window, run the tests with `make testacc`
 
-In order to run the full suite of Acceptance tests, run `make testacc`.
+## Generating Docs
 
-*Note:* Acceptance tests create real resources, and often cost money to run.
-
-```sh
-$ make testacc
-```
+From the root of the repo run `make generate`
 
 ## TODO:
 
 * Add Warnings on Plan if organization or bucket `name` changes, similiar to the UI.
+* Add additional resources & data sources for:
+  * Buckets
+  * Users
+  * Authorizations
+  * Labels
+  * Tasks
+
+## Using the provider
+
+Please see the detailed docs for individual resource usage. Below is an
+example using the InfluxDB provider to configure all resource types available:
+
+```hcl
+provider "influxdb2" {
+  host     = "http://localhost:8086"
+  token    = "super-secret-admin-token"
+}
+
+resource "influxdb2_organization" "org" {
+  name = "test-org"
+  description = "Organization for test users"
+}
+```

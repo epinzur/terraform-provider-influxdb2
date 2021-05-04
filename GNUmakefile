@@ -1,27 +1,32 @@
+default: testacc 
+GOARCH=$(shell go env GOARCH)
+GOOS=$(shell go env GOOS)
 #HOSTNAME=hashicorp.com
-NAMESPACE=rltvty
 NAME=influxdb2
+NAMESPACE=rltvty
+VERSION=0.0.1
+
 BINARY=terraform-provider-${NAME}
-VERSION=0.1
-OS_ARCH=darwin_amd64
-TEST?=$$(go list ./... | grep -v 'vendor')
 
-default: testacc
+INSTALL_PATH=~/.local/share/terraform/plugins/localhost/providers/${NAMESPACE}/${NAME}/${VERSION}/linux_$(GOARCH)
 
-build:
-	go build -o ${BINARY}
-
-install: build
-#	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-#	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-	mkdir -p ~/.terraform.d/plugins/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-	mv ${BINARY} ~/.terraform.d/plugins/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-
-test: 
-	go test -i $(TEST) || exit 1                                                   
-	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4                    
+ifeq ($(GOOS), darwin)
+	INSTALL_PATH=~/Library/Application\ Support/io.terraform/plugins/localhost/providers/${NAMESPACE}/${NAME}/${VERSION}/darwin_$(GOARCH)
+endif
+ifeq ($(GOOS), "windows")
+	INSTALL_PATH=%APPDATA%/HashiCorp/Terraform/plugins/localhost/providers/${NAMESPACE}/${NAME}/${VERSION}/windows_$(GOARCH)
+endif
 
 # Run acceptance tests
-.PHONY: testacc
 testacc:
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
+	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
+
+dev:
+	mkdir -p $(INSTALL_PATH)	
+	go build -o $(INSTALL_PATH)/$(BINARY) main.go
+
+generate:
+	terraform fmt -recursive ./examples/
+	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+
+.PHONY: testacc docs
