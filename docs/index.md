@@ -1,20 +1,26 @@
 ---
-page_title: "scaffolding Provider"
+page_title: "influxdb2 Provider"
 subcategory: ""
 description: |-
   
 ---
 
-# scaffolding Provider
+# influxdb2 Provider
 
 
 
 ## Example Usage
 
 ```terraform
-provider "scaffolding" {
-  # example configuration here
+provider "influxdb2" {
+  host  = "http://localhost:8086"    # changeme
+  token = "super-secret-admin-token" # changeme
 }
 ```
 
 ## Schema
+
+### Required
+
+- **host** (String) The host url where influxDB2 lives. Can also be set using the `INFLUX_HOST` environment variable.
+- **token** (String, Sensitive) An auth token that has the nesecary permissions to read-from and/or write-to InfluxDB2. Ideally this should be set using the `INFLUX_TOKEN` environment variable, so that the secret is not saved to source control.
