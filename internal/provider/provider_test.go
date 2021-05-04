@@ -15,22 +15,7 @@ import (
 // - Run the following to start the Influx server in test mode:
 //       docker-compose up
 //
-// - Take the "Root Token" value printed by Vault as the server started
-//   up and set it as the value of the VAULT_TOKEN environment variable
-//   in a new shell whose current working directory is the root of the
-//   Terraform repository.
-//
-// - As directed by the Vault server output, set the VAULT_ADDR environment
-//   variable. e.g.:
-//       export VAULT_ADDR='http://127.0.0.1:8200'
-//
-// - Run the Terraform acceptance tests as usual:
-//       make testacc TEST=./builtin/providers/vault
-//
-// The tests expect to be run in a fresh, empty Vault and thus do not attempt
-// to randomize or otherwise make the generated resource paths unique on
-// each run. In case of weird behavior, restart the Vault dev server to
-// start over with a fresh Vault. (Remember to reset VAULT_TOKEN.)
+// - Run the tests `make testacc`
 
 // providerFactories are used to instantiate a provider during acceptance testing.
 // The factory function will be invoked for every Terraform CLI command executed
